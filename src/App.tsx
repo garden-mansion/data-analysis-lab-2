@@ -1,92 +1,22 @@
-import {
-  useState,
-  type ChangeEventHandler,
-  type FC,
-  type SubmitEventHandler,
-} from 'react';
-import { Field, FieldDescription, FieldLabel } from './components/ui/field';
-import { Input } from './components/ui/input';
-import { Button } from './components/ui/button';
-import { getReviewsByID } from './features/kinopoisk-api';
-import { Spinner } from './components/ui/spinner';
+import { useState, type FC } from 'react';
 import { ReviewCard } from './widgets/review-card';
 import type { Review } from './entities/review';
 import { FullReviewDialog } from './widgets/review-card/ui/FullReviewDialog';
+import { FindReviewsForm } from './widgets/find-reviews-form';
 
 const App: FC = () => {
-  const idInputName = 'kinopoisk-id';
-
-  const [userInput, setUserInput] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const handleUserInputChange: ChangeEventHandler<HTMLInputElement> = (
-    event,
-  ) => {
-    const { value } = event.currentTarget;
-    setUserInput(value);
-    setIsSubmitDisabled(value ? false : true);
-  };
   const [currentReviews, setCurrentReviews] = useState<Review[]>([]);
 
-  const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
+  const [reviews, setReviews] = useState<Review | null>(null);
 
-  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-
-    if (!userInput) {
-      return;
-    }
-
-    setIsSubmitDisabled(true);
-    setIsLoading(true);
-
-    getReviewsByID(+userInput).then((result) => {
-      setIsSubmitDisabled(false);
-      setIsLoading(false);
-
-      if (result) {
-        setCurrentReviews(result.reviews);
-      }
-    });
-  };
-
-  const [currentReview, setCurrentReview] = useState<Review | null>(null);
-  const openReview = (review: Review) => setCurrentReview(review);
+  const openReview = (review: Review) => setReviews(review);
   const removeCurrentReview = () => {
-    setCurrentReview(null);
+    setReviews(null);
   };
 
   return (
     <>
-      <div className="w-full max-w-xl mx-auto p-8">
-        <form
-          action=""
-          onSubmit={handleSubmit}
-          className="flex flex-wrap gap-8"
-        >
-          <Field>
-            <FieldLabel htmlFor={idInputName}>kinopoiskId</FieldLabel>
-            <Input
-              value={userInput}
-              onChange={handleUserInputChange}
-              id={idInputName}
-              type="number"
-              min={0}
-              name={idInputName}
-              placeholder="Введите ID фильма на Кинопоиск"
-            />
-            <FieldDescription>
-              см. последний параметр в URL фильма на Кинопоиске
-            </FieldDescription>
-          </Field>
-
-          <Field>
-            <Button type="submit" disabled={isSubmitDisabled}>
-              Подтвердить
-              {isLoading && <Spinner />}
-            </Button>
-          </Field>
-        </form>
-      </div>
+      <FindReviewsForm setCurrentReviews={setCurrentReviews} />
 
       <div className="max-w-xl mx-auto grid grid-cols-1 gap-8 p-8">
         {currentReviews.map((review) => (
@@ -99,8 +29,8 @@ const App: FC = () => {
       </div>
 
       <FullReviewDialog
-        review={currentReview}
-        isOpen={!!currentReview}
+        review={reviews}
+        isOpen={!!reviews}
         removeCurrentReview={removeCurrentReview}
       />
     </>
