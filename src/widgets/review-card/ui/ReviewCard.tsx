@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/tooltip';
 import { sendReview } from '@/features/openrouter-api';
 import { Spinner } from '@/components/ui/spinner';
+import { downloadTxt } from '@/shared/download-txt';
 
 interface ReviewCardProps {
   review: Review;
@@ -50,7 +51,13 @@ export const ReviewCard: FC<ReviewCardProps> = ({ review, openReview }) => {
     setIsSummarizing(true);
     const summarizedReview = await sendReview(review.description);
 
-    console.log('summarize result', summarizedReview);
+    if (summarizedReview) {
+      const { choices } = summarizedReview;
+      const { message } = choices[0];
+
+      downloadTxt(message.content, kinopoiskId.toString());
+    }
+
     setIsSummarizing(false);
   };
 

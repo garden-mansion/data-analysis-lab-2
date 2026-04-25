@@ -7,11 +7,6 @@ const headers = {
 };
 
 const getPayload = (reviewDescription: string) => ({
-  // models: [
-  //   'inclusionai/ling-2.6-1t',
-  //   'inclusionai/ling-2.6-flash',
-  //   'baidu/qianfan-ocr-fast',
-  // ],
   model: 'google/gemma-4-26b-a4b-it',
   messages: [
     {
