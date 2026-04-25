@@ -27,7 +27,7 @@ export const FullReviewDialog: FC<FullReviewDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={removeCurrentReview}>
-      <DialogContent>
+      <DialogContent showCloseButton={false}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>Автор: {author}</DialogDescription>

@@ -13,13 +13,15 @@ import {
   REVIEW_TYPE_STYLE,
   type Review,
 } from '@/entities/review';
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import { CalendarDays } from 'lucide-react';
 import {
   TooltipContent,
   TooltipTrigger,
   Tooltip,
 } from '@/components/ui/tooltip';
+import { sendReview } from '@/features/openrouter-api';
+import { Spinner } from '@/components/ui/spinner';
 
 interface ReviewCardProps {
   review: Review;
@@ -41,6 +43,16 @@ export const ReviewCard: FC<ReviewCardProps> = ({ review, openReview }) => {
   } = review;
 
   const handleOpenReviewClick = () => openReview(review);
+
+  const [isSummarizing, setIsSummarizing] = useState<boolean>(false);
+
+  const handleSummarizeReviewClick = async () => {
+    setIsSummarizing(true);
+    const summarizedReview = await sendReview(review.description);
+
+    console.log('summarize result', summarizedReview);
+    setIsSummarizing(false);
+  };
 
   return (
     <Card className="w-full mx-auto">
@@ -93,7 +105,14 @@ export const ReviewCard: FC<ReviewCardProps> = ({ review, openReview }) => {
       </CardContent>
 
       <CardFooter>
-        <Button className="w-full cursor-pointer">Выжать!</Button>
+        <Button
+          className="w-full cursor-pointer"
+          onClick={handleSummarizeReviewClick}
+          disabled={isSummarizing}
+        >
+          {isSummarizing && <Spinner />}
+          Выжать!
+        </Button>
       </CardFooter>
     </Card>
   );
