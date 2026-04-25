@@ -1,1 +1,2 @@
-export { example, getReviewsByID } from './lib/api';
+export { getReviewsByID } from './lib/api';
+export type { ReviewResponse } from './model/ReviewResponse';

@@ -62,6 +62,4 @@ function Button({
   );
 }
 
-// todo: fix error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
-// (запусти bun run lint)
 export { Button, buttonVariants };

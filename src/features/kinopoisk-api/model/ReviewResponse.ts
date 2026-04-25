@@ -1,4 +1,4 @@
-import type { Review } from './Review';
+import type { Review } from '@/entities/review';
 
 export interface ReviewResponse {
   total: number;

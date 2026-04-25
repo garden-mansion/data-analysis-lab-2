@@ -9,6 +9,9 @@ import { Input } from './components/ui/input';
 import { Button } from './components/ui/button';
 import { getReviewsByID } from './features/kinopoisk-api';
 import { Spinner } from './components/ui/spinner';
+import { ReviewCard } from './widgets/review-card';
+import type { Review } from './entities/review';
+import { FullReviewDialog } from './widgets/review-card/ui/FullReviewDialog';
 
 const App: FC = () => {
   const idInputName = 'kinopoisk-id';
@@ -22,6 +25,7 @@ const App: FC = () => {
     setUserInput(value);
     setIsSubmitDisabled(value ? false : true);
   };
+  const [currentReviews, setCurrentReviews] = useState<Review[]>([]);
 
   const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(true);
 
@@ -36,39 +40,70 @@ const App: FC = () => {
     setIsLoading(true);
 
     getReviewsByID(+userInput).then((result) => {
-      console.log(result);
       setIsSubmitDisabled(false);
       setIsLoading(false);
+
+      if (result) {
+        setCurrentReviews(result.reviews);
+      }
     });
   };
 
-  return (
-    <div className="w-full max-w-md mx-auto p-8">
-      <form action="" onSubmit={handleSubmit} className="flex flex-wrap gap-8">
-        <Field>
-          <FieldLabel htmlFor={idInputName}>kinopoiskId</FieldLabel>
-          <Input
-            value={userInput}
-            onChange={handleUserInputChange}
-            id={idInputName}
-            type="number"
-            min={0}
-            name={idInputName}
-            placeholder="Введите ID фильма на Кинопоиск"
-          />
-          <FieldDescription>
-            см. последний параметр в URL фильма на Кинопоиске
-          </FieldDescription>
-        </Field>
+  const [currentReview, setCurrentReview] = useState<Review | null>(null);
+  const openReview = (review: Review) => setCurrentReview(review);
+  const removeCurrentReview = () => {
+    setCurrentReview(null);
+  };
 
-        <Field>
-          <Button type="submit" disabled={isSubmitDisabled}>
-            Подтвердить
-            {isLoading && <Spinner />}
-          </Button>
-        </Field>
-      </form>
-    </div>
+  return (
+    <>
+      <div className="w-full max-w-xl mx-auto p-8">
+        <form
+          action=""
+          onSubmit={handleSubmit}
+          className="flex flex-wrap gap-8"
+        >
+          <Field>
+            <FieldLabel htmlFor={idInputName}>kinopoiskId</FieldLabel>
+            <Input
+              value={userInput}
+              onChange={handleUserInputChange}
+              id={idInputName}
+              type="number"
+              min={0}
+              name={idInputName}
+              placeholder="Введите ID фильма на Кинопоиск"
+            />
+            <FieldDescription>
+              см. последний параметр в URL фильма на Кинопоиске
+            </FieldDescription>
+          </Field>
+
+          <Field>
+            <Button type="submit" disabled={isSubmitDisabled}>
+              Подтвердить
+              {isLoading && <Spinner />}
+            </Button>
+          </Field>
+        </form>
+      </div>
+
+      <div className="max-w-xl mx-auto grid grid-cols-1 gap-8 p-8">
+        {currentReviews.map((review) => (
+          <ReviewCard
+            key={review.kinopoiskId}
+            review={review}
+            openReview={openReview}
+          />
+        ))}
+      </div>
+
+      <FullReviewDialog
+        review={currentReview}
+        isOpen={!!currentReview}
+        removeCurrentReview={removeCurrentReview}
+      />
+    </>
   );
 };
 

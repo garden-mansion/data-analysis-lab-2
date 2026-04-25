@@ -7,7 +7,6 @@
 
 * {
   box-sizing: border-box;
-  font-family: Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
@@ -126,9 +125,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
