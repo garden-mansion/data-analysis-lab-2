@@ -33,9 +33,7 @@ export const FullReviewDialog: FC<FullReviewDialogProps> = ({
           <DialogDescription>Автор: {author}</DialogDescription>
         </DialogHeader>
 
-        <p className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
-          {description}
-        </p>
+        <p className="-mx-4 max-h-[50vh] overflow-y-auto px-4">{description}</p>
       </DialogContent>
     </Dialog>
   );

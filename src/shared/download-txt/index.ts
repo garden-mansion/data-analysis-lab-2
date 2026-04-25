@@ -1,1 +1,1 @@
-export { downloadTxt } from './lib/downloadTxt'
+export { downloadTxt } from './lib/downloadTxt';
