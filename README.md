@@ -1,75 +1,89 @@
-# React + TypeScript + Vite
+# Лабораторная работа 2 по Аналитике Данных
+## Выполнил Кон Владислав (Б9123-09-03-04)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Summarizing отзывов по фильму с Кинопоиска по его ID (последний параметр в URL на странице фильма на Кинопоиске)
 
-Currently, two official plugins are available:
+#### Суть
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Вы передаете id фильма, отзывы по которому вы хотите получить
+- После этого осуществляется запрос на неофициальный API Кинопоиска (ссылка: https://kinopoiskapiunofficial.tech/)
+- В случае если id корректный - загружаются отзывы в формате JSON (до 20 штук) на фильм, на странице появляются карточки с этими отзывами и 
+вы можете выбрать любой отзыв, краткую выжимку по которому хотите получить
+- После этого осуществляем другой запрос на API OpenRouter (используется google/gemma-4-26b-a4b-it). Через промпт просим ллмку сделать краткий пересказ по отзыву в 3-5 предложениях. В результате получаем .txt файл с пересказом отзыва
+- При необходимости можем повторять этот процесс, в том числе и с другими фильмами (главное передавать корректный id)
 
-## React Compiler
+#### Пример входных данных
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
+```json
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "Ты — ассистент, который анализирует отзывы на фильмы и составляет краткие выжимки на эти отзывы."
     },
-  },
-])
+    {
+      "role": "user",
+      "content": "Проанализируй этот отзыв и составь краткую выжимку (3-5 предложений):\n«Криминальное чтиво» режиссера Квентина Тарантино — произведение, которое продолжает оставаться одним из самых ярких культурных феноменов 90-х годов..."
+    }
+  ]
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
+#### Пример выходных данных 
+```json
+{
+  "id": "gen-1777139744-pFbMOPHMkMMKTbj2Lawm",
+  "object": "chat.completion",
+  "created": 1777139744,
+  "model": "google/gemma-4-26b-a4b-it-20260403",
+  "provider": "Ionstream",
+  "system_fingerprint": null,
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "native_finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "Вот краткая выжимка отзыва:\n\n«Криминальное чтиво» Квентина Тарантино представлено как выдающийся культурный феномен, мастерски сочетающий криминальную драму, черный юмор и философию. Автор отзыва особо выделяет остроумные диалоги, многослойных персонажей и уникальный нелинейный монтаж, который создает динамичный и интригующий сюжет. Особое внимание уделяется гармонии визуального стиля, продуманных деталей и атмосферного саундтрека, формирующих целостное художественное полотно. В целом, картина оценивается как настоящий праздник кинематографа, который продолжает восхищать зрителей благодаря своей смелости и глубине.",
+        "refusal": null,
+        "reasoning": null
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 1299,
+    "completion_tokens": 156,
+    "total_tokens": 1455,
+    "cost": 0.00014553,
+    "is_byok": false,
+    "prompt_tokens_details": {
+      "cached_tokens": 0,
+      "cache_write_tokens": 0,
+      "audio_tokens": 0,
+      "video_tokens": 0
     },
-  },
-])
+    "cost_details": {
+      "upstream_inference_cost": 0.00014553,
+      "upstream_inference_prompt_cost": 0.00009093,
+      "upstream_inference_completions_cost": 0.0000546
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "image_tokens": 0,
+      "audio_tokens": 0
+    }
+  }
+}
 ```
+
+сохраненный .txt файл с пересказом рецензии см. в review-summarize-example.txt
+
+#### ID некоторых фильмов 
+
+1. Криминальное чтиво (1994) **342**
+2. Бэтмен (2022) **590286**
+3. Марти Великолепный (2025) **6290547**
+4. Наполеон (2023) **1437923**
+5. Цельнометаллическая оболочка (1987) **418**
